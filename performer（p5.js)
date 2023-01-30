@@ -1,0 +1,299 @@
+//一
+let mySize;
+let seed = Math.random() * 1241;
+let circleR;
+var grad;
+let angle_0, angle_1;
+
+// colors
+let colors1 = "fef9fb-fafdff-ffffff-fcfbf4-f9f8f6".split("-").map((a) => "#" + a);
+let colors2 = "8c75ff-c553d2-2dfd60-2788f5-23054f-f21252-8834f1-c4dd92-184fd3-f9fee2-2E294E-541388-F1E9DA-FFD400-D90368-e9baaa-ffa07a-164555-ffe1d0-acd9e7-4596c7-6d8370-e45240-21d3a4-3303f9-cd2220-173df6-244ca8-a00360-b31016".split("-").map((a) => "#" + a);
+
+//move
+let plus_x, plus_y;
+
+function setup() {
+	// pixelDensity(5);
+	mySize = min(windowWidth, windowHeight);
+	createCanvas(mySize,mySize);
+	randomSeed(seed);
+	background(5);
+	noStroke();
+	let col1 = "#202020";
+	let col2 = "#1a1a1a";
+	var gradbg = drawingContext.createLinearGradient(0, 0, width, height);
+	gradbg.addColorStop(0, col1);
+	gradbg.addColorStop(1, col2);
+	drawingContext.fillStyle = gradbg;
+	rect(0, 0, width, height);
+
+	angle_1 = random(TAU);
+	angle_0 = random(TAU);
+	plus_x = 0;
+	plus_y = 0;
+	circleR = random(mySize / 5,mySize / 10);
+}
+
+function draw() {
+	randomSeed(seed);
+	noFill();
+	strokeWeight(random(1));
+	stroke(0);
+	
+	// let col1 = "#20202040";
+	// let col2 = "#1a1a1a40";
+	// var gradbg = drawingContext.createLinearGradient(0, 0, width, height);
+	// gradbg.addColorStop(0, col1);
+	// gradbg.addColorStop(1, col2);
+	// drawingContext.fillStyle = gradbg;
+	// rect(0, 0, width, height);
+	
+	push();
+	translate(width / 2, height / 2);
+	rotate(random(TAU) + angle_0);
+
+	// blendMode(SCREEN)
+
+	// circle 01
+	push();
+	translate(-circleR / 4 - plus_x, +plus_y);
+	rotate(angle_1);
+	let col3 = random(colors1);
+	let col4 = random(colors2);
+
+	grad = drawingContext.createLinearGradient(0, -circleR, 0, circleR);
+	grad.addColorStop(0, col4);
+	grad.addColorStop(1, str(col3) + "80");
+	drawingContext.strokeStyle = grad;
+	circle(0, 0, circleR);
+	pop();
+
+	// circle 02
+	push();
+	translate(circleR / 4 + plus_x, -plus_y);
+	rotate(angle_1 + TAU);
+
+	grad = drawingContext.createLinearGradient(0, circleR, 0, -circleR);
+	grad.addColorStop(0, col4);
+	grad.addColorStop(1, str(col3) + "80");
+	drawingContext.strokeStyle = grad;
+	circle(0, 0, circleR);
+	pop();
+
+	pop();
+
+
+	angle_1 += TAU / 360;
+  angle_0 -= TAU / 360;
+
+	if (circleR<mySize/2) {
+		
+		circleR += 0.5;
+	}
+
+		plus_x += sin(angle_0);
+		plus_y += cos(angle_0);
+}
+
+
+function keyTyped() {
+	if (key === "s" || key === "S") {
+		noLoop();
+		saveCanvas("0315_rolling gradient_2_2022", "png");
+	}
+}
+
+
+
+
+
+
+//二
+var colors="191923-0e79b2-bf1363-f39237-ff0000-00ff00-0000ff".split("-").map(a=>"#"+a)
+let overAllTexture
+function setup() {
+	createCanvas(800, 800);
+	background(100);
+	xx=width/2
+	
+	overAllTexture=createGraphics(width,height)
+	
+	overAllTexture.loadPixels()
+	for(var i=0;i<width;i++){
+		for(var o=0;o<height;o++){
+			overAllTexture.set(i,o,color(100,noise(i/3,o/3,i*o/50)*random([0,30,60])))
+		}
+	}
+	overAllTexture.updatePixels()
+}
+
+function anemone(xx,rid,clr,thickness=1,length=1){
+	
+	
+
+	blendMode(SCREEN)
+	beginShape()
+	strokeWeight(noise(rid,5000,frameCount/1000)*150*thickness)
+	let hh=noise(xx,rid,1000+frameCount/100)*height*0.7+random(2)
+	stroke(clr)
+	for(var i=0;i<hh;i+=2){
+		let deltaFactor=map(i,0,100,0,1,true)
+		let mouseFactor=map(i,0,400,0,1)*log(hh)/10
+		let mouseDirectionFactor=noise(frameCount/50)-0.5
+		let mouseDelta=map(mouseX,0,width,-500,500)*mouseDirectionFactor
+		
+		let deltaX=deltaFactor*(noise(i/400,frameCount/100+mouseY/10,rid)-0.5)*200
+		curveVertex(xx+deltaX+mouseDelta*mouseFactor,-i*2*length)
+	}
+	endShape()
+}
+function draw() {
+	push()
+	fill(0)
+	noStroke()
+	blendMode(BLEND)
+	rect(0,0,width,height)
+	pop()
+	push()
+	translate(0,height)
+	stroke(255)
+	blendMode(BLEND)
+	//background(0)
+	noFill()
+	let clrs=colors
+	blendMode(SCREEN)
+	for(var i=0;i<10;i++){
+		clrs.forEach((clr,clrId)=>{
+	    anemone(i*100,i+clrId/2,clr)
+	  })
+		
+  }
+	for(var i=0;i<5;i++){
+		clrs.forEach((clr,clrId)=>{
+	    anemone(i*300,i+clrId/2+50,clr,0.05,1.2)
+	  })
+		
+  }
+	pop()
+	
+	push()
+	blendMode(MULTIPLY)
+	image(overAllTexture,0,0)
+	pop()
+	
+	//ellipse(mouseX,mouseY,20,20);
+}
+
+
+
+
+
+
+
+//三
+let mySize;
+
+// a shader variable
+let theShader;
+let shaderTexture;
+
+let theta = 0;
+
+function preload() {
+	theShader = new p5.Shader(this.renderer, vert, frag)
+}
+
+function setup() {
+	 // pixelDensity(1);
+	// mySize = min(windowWidth, windowHeight);
+	mySize = 600;
+	// shaders require WEBGL mode to work
+	createCanvas(1112, 834, WEBGL);
+	noStroke();
+	shaderTexture = createGraphics(width, height, WEBGL);
+	shaderTexture.noStroke();
+}
+
+function draw() {  
+  // shader() sets the active shader with our shader
+  shader(theShader);
+  
+  theShader.setUniform("u_resolution", [width, height]);
+  theShader.setUniform("u_time", frameCount * 0.01);
+  theShader.setUniform("u_mouse", [mouseX/1000.0, map(mouseY, 0, height, height, 0)/1000.0]);
+
+  // rect gives us some geometry on the screen
+  rect(0,0,width, height);
+}
+
+function windowResized() {
+	resizeCanvas(width, height);
+}
+
+// save jpg
+let lapse = 0;    // mouse timer
+function mousePressed(){
+  if (millis() - lapse > 400){
+    save("img_" + month() + '-' + day() + '_' + hour() + '-' + minute() + '-' + second() + ".jpg");
+    lapse = millis();
+  } 
+}
+
+
+
+
+
+
+//四
+const n = 160;
+const maxH = 500;
+const minH = 100;
+const maxW = 1000;
+const minW = 200;
+const palettes = [
+	"233d4d-fe7f2d-fcca46-a1c181-619b8a",
+	"545863-00e8fc-f96e46-f9c846-ffe3e3",
+	"a4243b-d8c99b-d8973c-bd632f-273e47",
+	"e3170a-a9e5bb-fcf6b1-f7b32b-2d1e2f",
+	"ee6c4d-f38d68-662c91-17a398-33312e",
+	"9ebc9e-ffcfd2-ffafc5-553e4e-e0479e"
+];
+
+let seed;
+
+function setup() {
+	createCanvas(windowWidth, windowHeight, WEBGL);
+	
+	seed = random(100000);
+}
+
+function draw() {
+	background(240);
+	randomSeed(seed);
+	
+	let palette = random(palettes).split("-");
+	for (let i = 0; i < palette.length; i++) {
+		palette[i] = color("#" + palette[i]);
+	}
+	
+	noStroke();
+	ambientLight(200);
+	directionalLight(color(255), 0.2, 0, -1);
+	for (let i = 0; i < n; i++) {
+		fill(random(palette));
+		const rnd = random() > 0.5 ? 1 : -1;
+		const w = random(minW, maxW);
+		const h = random(minH, maxH);
+		push();
+		rotateY(rnd * PI / 4);
+		const x = (random(width * 4) + millis() / 10) % (width * 4) - w / 2;
+		if (w / 2 - x < 0) {
+			translate(rnd * x, random(-height, height), -random(width * 4));
+			plane(w, h);
+		} else {
+			translate(rnd * (x / 2 + w / 4), random(-height, height), -random(width * 4));
+			plane(w / 2 + x, h);
+		}
+		pop();
+	}
+}
